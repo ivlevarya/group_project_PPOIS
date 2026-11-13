@@ -8,10 +8,10 @@
 
 PatientRepository::PatientRepository(Database& database) : database(database) {}
 
-std::int64_t PatientRepository::addPatient(const Patient& patient) {
+std::int64_t PatientRepository::addPatient(const Patient& patient, std::int64_t userId) {
     sqlite3* db = database.getConnection();
 
-    const char* sql = "INSERT INTO patients (name, birth_year) VALUES (?, ?);";
+    const char* sql = "INSERT INTO patients (name, birth_year, user_id) VALUES (?, ?, ?);";
 
     sqlite3_stmt* statement = nullptr;
 
@@ -28,8 +28,10 @@ std::int64_t PatientRepository::addPatient(const Patient& patient) {
     int nameResult = sqlite3_bind_text(statement, 1, name.c_str(), -1, SQLITE_TRANSIENT);
 
     int yearResult = sqlite3_bind_int(statement, 2, patient.getBirthYear());
+    int UseIDResult = sqlite3_bind_int64(statement, 3, userId);
 
-    if (nameResult != SQLITE_OK || yearResult != SQLITE_OK) {
+
+    if (nameResult != SQLITE_OK || yearResult != SQLITE_OK || UseIDResult != SQLITE_OK) {
         std::string error = sqlite3_errmsg(db);
         sqlite3_finalize(statement);
         throw std::runtime_error(error);
@@ -206,3 +208,72 @@ bool PatientRepository::deletePatient(std::int64_t id) {
 
     return deleted;
 }
+
+
+std::vector<PatientWithId>
+PatientRepository::getPatientsByUserId(std::int64_t userId)
+{
+    sqlite3* db = database.getConnection();
+
+    const char* sql = "SELECT id, name, birth_year FROM patients WHERE user_id = ? ORDER BY id;";
+
+    sqlite3_stmt* statement = nullptr;
+
+    // Подготавливаем SQL-запрос
+    int result = sqlite3_prepare_v2(db, sql, -1, &statement, nullptr);
+
+    if (result != SQLITE_OK) {
+        throw std::runtime_error(sqlite3_errmsg(db));
+    }
+
+    // Передаем ID пользователя
+    result = sqlite3_bind_int64( statement, 1, userId);
+
+    if (result != SQLITE_OK) {
+        std::string error = sqlite3_errmsg(db);
+        sqlite3_finalize(statement);
+        throw std::runtime_error(error);
+    }
+
+    std::vector<PatientWithId> patients;
+
+    // Читаем все найденные строки
+    while ((result = sqlite3_step(statement)) == SQLITE_ROW) {
+
+        std::int64_t id = sqlite3_column_int64(statement, 0);
+
+        const unsigned char* nameText = sqlite3_column_text(statement, 1);
+
+        if (nameText == nullptr) {
+            sqlite3_finalize(statement);
+            throw std::runtime_error("Invalid patient name");
+        }
+
+        std::string name = reinterpret_cast<const char*>(nameText);
+
+        int birthYear = sqlite3_column_int(statement, 2);
+
+        // Создаем объект пациента
+        Patient patient(name, birthYear);
+
+        // Добавляем его в список
+        patients.push_back({ id, patient });
+    }
+
+    // Проверяем, корректно ли завершилось чтение
+    if (result != SQLITE_DONE) {
+        std::string error = sqlite3_errmsg(db);
+        sqlite3_finalize(statement);
+        throw std::runtime_error(error);
+    }
+
+    // Освобождаем SQL-запрос
+    result = sqlite3_finalize(statement);
+
+    if (result != SQLITE_OK) {
+        throw std::runtime_error(sqlite3_errmsg(db));
+    }
+
+    return patients;
+}
+

@@ -1,40 +1,45 @@
+
 #include <iostream>
+#include <exception>
+
+#include "models/User.h"
 #include "models/Patient.h"
+
 #include "database/Database.h"
+
+#include "repositories/UserRepositiry.h"
 #include "repositories/PatientRepository.h"
-#include "external/sqlite/sqlite3.h"
 
 int main() {
     try {
         Database db("database/medspace.db");
-        PatientRepository repository(db);
-        Patient p("Varvara", 2008);
-        std::int64_t id = repository.addPatient(p);
-        std::cout << "Created ID: " << id << std::endl;
-        Patient p_1("Mark", 2016);
-        bool update = repository.updatePatient(id, p_1);
-        std::cout << "Updated: " << update << '\n';
-        auto found = repository.getPatientById(id);
 
-        if (found.has_value()) {
-            std::cout << "Name: " << found->getName() << '\n';
+        PatientRepository patientRepository(db);
 
-            std::cout << "Birth year: " << found->getBirthYear() << '\n';
+        std::int64_t userId = 5;
+
+        auto p = patientRepository.getPatientsByUserId(userId);
+
+        if (p.empty()) {
+            std::cout << "No profiles found!" << '\n';
         }
-        bool deleted = repository.deletePatient(id);
 
-        std::cout << "Deleted: " << deleted << '\n';
+        for (int i = 0; i < p.size(); i++) {
+            std::cout << "Patient ID: " << p[i].id << std::endl;
+            std::cout << "Name: "
+                << p[i].patient.getName() << '\n';
 
-        // 5. Проверяем, что пациент удален
-        auto afterDelete = repository.getPatientById(id);
+            std::cout << "Birth year: "
+                << p[i].patient.getBirthYear() << '\n';
 
-        if (!afterDelete.has_value()) {
-            std::cout << "Patient not found!" << '\n';
+            std::cout << "--------------------" << '\n';
         }
     }
     catch (const std::exception& error) {
-        std::cerr << error.what() << std::endl;
+        std::cerr << "Error: "
+            << error.what() << '\n';
         return 1;
     }
+
     return 0;
 }
