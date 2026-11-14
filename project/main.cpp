@@ -1,44 +1,29 @@
 
 #include <iostream>
-#include <exception>
+#include <memory>
 
-#include "models/User.h"
-#include "models/Patient.h"
-
-#include "database/Database.h"
-
-#include "repositories/UserRepositiry.h"
-#include "repositories/PatientRepository.h"
+#include "models/MedicalCard.h"
+#include "models/Analysis.h"
+#include "models/DoctorVisit.h"
 
 int main() {
-    try {
-        Database db("database/medspace.db");
+    // Create medical card for patient ID = 1
+    MedicalCard card(1);
 
-        PatientRepository patientRepository(db);
+    // Add analysis
+    card.addRecord(std::make_unique<Analysis>("2026-11-10","Blood test", "Hemoglobin: 135"));
 
-        std::int64_t userId = 5;
+    // Add doctor visit
+    card.addRecord(std::make_unique<DoctorVisit>("2026-11-12", "Dr. Ivanov", "City Clinic", "Regular checkup"));
 
-        auto p = patientRepository.getPatientsByUserId(userId);
+    // Get all descriptions
+    auto descriptions = card.getDescriptions();
 
-        if (p.empty()) {
-            std::cout << "No profiles found!" << '\n';
-        }
+    std::cout << "Medical card of patient ID: "
+        << card.getPatientId() << '\n';
 
-        for (int i = 0; i < p.size(); i++) {
-            std::cout << "Patient ID: " << p[i].id << std::endl;
-            std::cout << "Name: "
-                << p[i].patient.getName() << '\n';
-
-            std::cout << "Birth year: "
-                << p[i].patient.getBirthYear() << '\n';
-
-            std::cout << "--------------------" << '\n';
-        }
-    }
-    catch (const std::exception& error) {
-        std::cerr << "Error: "
-            << error.what() << '\n';
-        return 1;
+    for (const auto& description : descriptions) {
+        std::cout << description << '\n';
     }
 
     return 0;
