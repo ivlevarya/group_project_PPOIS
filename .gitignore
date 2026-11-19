@@ -365,7 +365,8 @@ FodyWeavers.xsd
 *.vcxproj
 *.vcxproj.filters
 
- project/database/medspace.db
- project/external/sqlite/
- project/project.sln
 
+ 
+
+*.db 
+project/external/sqlite/ 
