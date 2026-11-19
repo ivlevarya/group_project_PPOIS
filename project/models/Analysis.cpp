@@ -9,3 +9,11 @@ std::string Analysis::getDescription() const {
         ", Result: " + result +
         ", Date: " + getDate();
 }
+
+std::string Analysis::getName() const {
+    return name;
+}
+
+std::string Analysis::getResult() const {
+    return result;
+}

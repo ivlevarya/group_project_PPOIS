@@ -12,4 +12,8 @@ public:
     Analysis(const std::string& date, const std::string& name, const std::string& result);
 
     std::string getDescription() const override;
+
+    std::string getName() const;
+
+    std::string getResult() const;
 };

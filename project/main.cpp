@@ -1,29 +1,54 @@
 
 #include <iostream>
+#include <exception>
 #include <memory>
+#include <cstdint>
 
-#include "models/MedicalCard.h"
 #include "models/Analysis.h"
-#include "models/DoctorVisit.h"
+#include "models/MedicalCard.h"
+
+#include "database/Database.h"
+#include "repositories/AnalysisRepository.h"
 
 int main() {
-    // Create medical card for patient ID = 1
-    MedicalCard card(1);
+    try {
+        Database db("database/medspace.db");
 
-    // Add analysis
-    card.addRecord(std::make_unique<Analysis>("2026-11-10","Blood test", "Hemoglobin: 135"));
+        AnalysisRepository analysisRepository(db);
 
-    // Add doctor visit
-    card.addRecord(std::make_unique<DoctorVisit>("2026-11-12", "Dr. Ivanov", "City Clinic", "Regular checkup"));
+        std::int64_t patientId = 9;
 
-    // Get all descriptions
-    auto descriptions = card.getDescriptions();
+        // Load analyses from SQLite
+        auto analyses =
+            analysisRepository.getAnalysesByPatientId(
+                patientId
+            );
 
-    std::cout << "Medical card of patient ID: "
-        << card.getPatientId() << '\n';
+        // Create medical card
+        MedicalCard card(patientId);
 
-    for (const auto& description : descriptions) {
-        std::cout << description << '\n';
+        // Add loaded analyses to medical card
+        for (const auto& analysis : analyses) {
+            card.addRecord(
+                std::make_unique<Analysis>(analysis)
+            );
+        }
+
+        // Display medical records
+        std::cout << "Medical Card: "
+            << card.getPatientId() << '\n';
+
+        auto descriptions = card.getDescriptions();
+
+        for (const auto& description : descriptions) {
+            std::cout << description << '\n';
+        }
+    }
+    catch (const std::exception& error) {
+        std::cerr << "Error: "
+            << error.what() << '\n';
+
+        return 1;
     }
 
     return 0;
