@@ -19,6 +19,8 @@
 #include "repositories/PatientRepository.h"
 #include "repositories/AnalysisRepository.h"
 #include "repositories/DoctorVisitRepository.h"
+#include "models/Medication.h"
+#include "repositories/MedicationRepository.h"
 
 // Read text from console
 std::string readText(const std::string& prompt) {
@@ -79,6 +81,8 @@ void showMenu() {
     std::cout << "4. Add analysis\n";
     std::cout << "5. Add doctor visit\n";
     std::cout << "6. Show medical card\n";
+    std::cout << "7. Add medication\n";
+    std::cout << "8. Show medications\n";
     std::cout << "0. Exit\n";
     std::cout << "==============================\n";
 }
@@ -93,6 +97,7 @@ int main() {
         PatientRepository patientRepository(db);
         AnalysisRepository analysisRepository(db);
         DoctorVisitRepository visitRepository(db);
+        MedicationRepository medicationRepository(db);
 
         while (true) {
             showMenu();
@@ -343,16 +348,103 @@ int main() {
 
                     break;
                 }
+                case 7: {
+                    std::int64_t patientId = readId("Enter patient ID: ");
+
+                    if (!patientRepository.getPatientById(patientId).has_value()) {
+                        std::cout << "Patient not found.\n";
+                        break;
+                    }
+
+                    std::string name = readText("Enter medication name: ");
+
+                    std::string dosage = readText("Enter dosage: ");
+
+                    std::string frequency = readText("Enter frequency: ");
+
+                    std::string startDate = readText("Enter start date (YYYY-MM-DD): ");
+
+                    std::string endDate = readText("Enter end date (YYYY-MM-DD): ");
+
+                    Medication medication(
+                        name,
+                        dosage,
+                        frequency,
+                        startDate,
+                        endDate
+                    );
+
+                    std::int64_t medicationId =
+                        medicationRepository.addMedication(
+                            medication,
+                            patientId
+                        );
+
+                    std::cout << "Medication saved!\n";
+                    std::cout << "Medication ID: "
+                        << medicationId << '\n';
+
+                    break;
+                }
+
+                case 8: {
+                    std::int64_t patientId = readId(
+                        "Enter patient ID: "
+                    );
+
+                    auto patient =
+                        patientRepository.getPatientById(patientId);
+
+                    if (!patient.has_value()) {
+                        std::cout << "Patient not found.\n";
+                        break;
+                    }
+
+                    auto medications =
+                        medicationRepository.getMedicationsByPatientId(
+                            patientId
+                        );
+
+                    std::cout << "\nMedications for "
+                        << patient->getName() << ":\n";
+
+                    if (medications.empty()) {
+                        std::cout << "No medications found.\n";
+                    }
+
+                    for (const auto& medication : medications) {
+                        std::cout << "\nName: "
+                            << medication.getName() << '\n';
+
+                        std::cout << "Dosage: "
+                            << medication.getDosage() << '\n';
+
+                        std::cout << "Frequency: "
+                            << medication.getFrequency() << '\n';
+
+                        std::cout << "Period: "
+                            << medication.getStartDate()
+                            << " - "
+                            << medication.getEndDate() << '\n';
+                    }
+
+                    std::cout << "\nTotal medications: "
+                        << medications.size() << '\n';
+
+                    break;
+                }
 
                       // Exit
                 case 0:
                     std::cout << "Goodbye!\n";
                     return 0;
+                    break;
 
                 default:
                     std::cout << "Unknown option.\n";
                     break;
                 }
+
             }
             catch (const std::exception& error) {
                 std::cerr << "Operation error: "

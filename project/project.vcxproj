@@ -26,10 +26,12 @@
     <ClCompile Include="models\DoctorVisit.cpp" />
     <ClCompile Include="models\MedicalCard.cpp" />
     <ClCompile Include="models\MedicalRecord.cpp" />
+    <ClCompile Include="models\Medication.cpp" />
     <ClCompile Include="models\Patient.cpp" />
     <ClCompile Include="models\User.cpp" />
     <ClCompile Include="repositories\AnalysisRepository.cpp" />
     <ClCompile Include="repositories\DoctorVisitRepository.cpp" />
+    <ClCompile Include="repositories\MedicationRepository.cpp" />
     <ClCompile Include="repositories\PatientRepository.cpp" />
     <ClCompile Include="repositories\UserRepository.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -42,10 +44,12 @@
     <ClInclude Include="models\DoctorVisit.h" />
     <ClInclude Include="models\MedicalCard.h" />
     <ClInclude Include="models\MedicalRecord.h" />
+    <ClInclude Include="models\Medication.h" />
     <ClInclude Include="models\Patient.h" />
     <ClInclude Include="models\User.h" />
     <ClInclude Include="repositories\AnalysisRepository.h" />
     <ClInclude Include="repositories\DoctorVisitRepository.h" />
+    <ClInclude Include="repositories\MedicationRepository.h" />
     <ClInclude Include="repositories\PatientRepository.h" />
     <ClInclude Include="repositories\UserRepositiry.h" />
   </ItemGroup>

@@ -54,6 +54,12 @@
     <ClCompile Include="repositories\DoctorVisitRepository.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="models\Medication.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="repositories\MedicationRepository.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="models\Patient.h">
@@ -90,6 +96,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="repositories\DoctorVisitRepository.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="models\Medication.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="repositories\MedicationRepository.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
