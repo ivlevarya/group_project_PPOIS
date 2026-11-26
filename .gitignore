@@ -370,3 +370,4 @@ FodyWeavers.xsd
 
 *.db 
 project/external/sqlite/ 
+.venv/
