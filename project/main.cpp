@@ -22,6 +22,8 @@
 #include "models/Medication.h"
 #include "repositories/MedicationRepository.h"
 
+#include "external/sqlite/sqlite3.h"
+
 // Read text from console
 std::string readText(const std::string& prompt) {
     while (true) {
@@ -83,6 +85,7 @@ void showMenu() {
     std::cout << "6. Show medical card\n";
     std::cout << "7. Add medication\n";
     std::cout << "8. Show medications\n";
+    std::cout << "9. Delete patient\n";
     std::cout << "0. Exit\n";
     std::cout << "==============================\n";
 }
@@ -91,13 +94,36 @@ int main() {
     try {
         // Connect to SQLite
         Database db("database/medspace.db");
-
         // Create repositories
         UserRepository userRepository(db);
         PatientRepository patientRepository(db);
         AnalysisRepository analysisRepository(db);
         DoctorVisitRepository visitRepository(db);
         MedicationRepository medicationRepository(db);
+
+
+        try {
+            Medication medication(
+                "Paracetamol",
+                "500 mg",
+                "Twice daily",
+                "2026-11-24",
+                "2026-12-01"
+            );
+
+            medicationRepository.addMedication(
+                medication, 999999999
+            );
+
+            std::cout << "Repository call finished\n";
+        }
+        catch (const std::exception& error) {
+            std::cout << "Database error: "
+                << error.what() << '\n';
+        }
+
+
+
 
         while (true) {
             showMenu();
@@ -430,6 +456,41 @@ int main() {
 
                     std::cout << "\nTotal medications: "
                         << medications.size() << '\n';
+
+                    break;
+                }
+                case 9: {
+                    // Get patient ID
+                    std::int64_t patientId = readId("Enter patient ID: ");
+
+                    // Check if patient exists
+                    auto patient = patientRepository.getPatientById(patientId);
+
+                    if (!patient.has_value()) {
+                        std::cout << "Patient not found\n";
+                        break;
+                    }
+
+                    // Show patient information
+                    std::cout << "Patient: "
+                        << patient->getName() << '\n';
+
+                    std::cout << "All patient medical records will be deleted.\n";
+
+                    // Ask for confirmation
+                    std::string confirmation = readText(
+                        "Type DELETE to confirm: "
+                    );
+
+                    if (confirmation != "DELETE") {
+                        std::cout << "Deletion cancelled\n";
+                        break;
+                    }
+
+                    // Delete patient
+                    patientRepository.deletePatient(patientId);
+
+                    std::cout << "Patient deleted successfully\n";
 
                     break;
                 }

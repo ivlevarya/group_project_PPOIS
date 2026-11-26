@@ -36,6 +36,8 @@
     <ClCompile Include="repositories\UserRepository.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="utils\DateUtils.cpp" />
+    <ClCompile Include="utils\ValidationUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="database\Database.h" />
@@ -52,6 +54,8 @@
     <ClInclude Include="repositories\MedicationRepository.h" />
     <ClInclude Include="repositories\PatientRepository.h" />
     <ClInclude Include="repositories\UserRepositiry.h" />
+    <ClInclude Include="utils\DateUtils.h" />
+    <ClInclude Include="utils\ValidationUtils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

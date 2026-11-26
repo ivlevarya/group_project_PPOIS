@@ -18,6 +18,19 @@ Database::Database(const std::string& path) : connection(nullptr) {
         throw std::runtime_error("Database connection error: " + message);
     }
     sqlite3_busy_timeout(connection, 5000);
+
+
+    int pragmaResult = sqlite3_exec(connection, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
+
+    if (pragmaResult != SQLITE_OK) {
+        std::string message = sqlite3_errmsg(connection);
+
+        sqlite3_close(connection);
+        connection = nullptr;
+
+        throw std::runtime_error("Failed to enable foreign keys: " + message);
+    }
+
 }
 
 Database::~Database()
