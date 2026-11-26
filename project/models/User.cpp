@@ -1,18 +1,31 @@
 #include "User.h"
 #include "../utils/ValidationUtils.h"
 
-User::User(std::string name)
-    : name(name) {
+User::User(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& passwordHash)
+    : firstName(firstName), lastName(lastName), email(email), passwordHash(passwordHash)
+{
+    ValidationUtils::validateRequiredText(this->firstName, "First name");
 
-    ValidationUtils::validateRequiredText(this->name, "User name");
+    ValidationUtils::validateRequiredText(this->lastName, "Last name");
+
+    ValidationUtils::validateRequiredText(this->email, "Email");
+
+    ValidationUtils::validateRequiredText(this->passwordHash, "Password hash");
 }
 
-std::string User::getName() const {
-    return name;
+const std::string& User::getFirstName() const {
+    return firstName;
 }
 
-void User::setName(const std::string& newName) {
-    ValidationUtils::validateRequiredText(newName, "User name");
-
-    name = newName;
+const std::string& User::getLastName() const {
+    return lastName;
 }
+
+const std::string& User::getEmail() const {
+    return email;
+}
+
+const std::string& User::getPasswordHash() const {
+    return passwordHash;
+}
+
