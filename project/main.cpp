@@ -77,7 +77,7 @@ std::int64_t readId(const std::string& prompt) {
 // Display main menu
 void showMenu() {
     std::cout << "\n========== MEDSPASE ==========\n";
-    std::cout << "1. Create user\n";
+    std::cout << "1. 1. Registration (API only)\n";
     std::cout << "2. Add patient\n";
     std::cout << "3. Show user's patients\n";
     std::cout << "4. Add analysis\n";
@@ -137,18 +137,8 @@ int main() {
 
                     // Create user
                 case 1: {
-                    std::string name = readText(
-                        "Enter user name: "
-                    );
-
-                    User user(name);
-
-                    std::int64_t userId =
-                        userRepository.addUser(user);
-
-                    std::cout << "User created!\n";
-                    std::cout << "User ID: "
-                        << userId << '\n';
+                    std::cout
+                        << "User registration will be handled by the API.\n";
 
                     break;
                 }
