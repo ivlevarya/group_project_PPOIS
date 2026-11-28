@@ -373,3 +373,4 @@ project/external/sqlite/
 .venv/
 build/
 medspase_core.cp313-win_amd64.pyd
+.env
